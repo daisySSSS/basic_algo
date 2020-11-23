@@ -1,0 +1,23 @@
+from binary_search import BinarySearchTree
+
+bst = BinarySearchTree()
+
+bst.insert(4)
+bst.insert(7)
+bst.insert(6)
+bst.insert(3)
+bst.insert(5)
+bst.insert(2)
+print('The binary search tree is:')
+bst.print_tree()
+print('The maximum value in the tree is:')
+print(bst.max().val)
+print('The minimum value in the tree is:')
+print(bst.min().val)
+print('The successor of 3 is:')
+print(bst.successor(bst.search(3)).val)
+print('The successor of 4 is:')
+print(bst.successor(bst.search(4)).val)
+bst.delete(bst.search(4))
+print('The successor of 3 after deleting 4 is:')
+print(bst.successor(bst.search(3)).val)
