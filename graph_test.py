@@ -16,6 +16,8 @@ g.add_edge(5, 3, 1)
 g.add_edge(1, 3, 7)
 g.add_edge(1, 6, 6)
 g.add_edge(6, 3, 2)
+g.add_edge(1, 0, 3)
+g.add_edge(4, 1, 5)
 
 g.print_graph()
 
