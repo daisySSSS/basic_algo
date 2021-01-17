@@ -3,13 +3,14 @@ import heapq
 
 INF = 1E4
 
-class Graph: 
-    def __init__(self, undirected = False): 
-        self.graph = defaultdict(dict) #dictionary containing adjacency List 
+
+class Graph:
+    def __init__(self, undirected=False):
+        self.graph = defaultdict(dict)  # dictionary containing adjacency List
         self.V = set()
         self.undirected = undirected
 
-    def add_edge(self,u,v,w):
+    def add_edge(self, u, v, w):
         if self.undirected:
             self.graph[u][v] = w
             self.graph[v][u] = w
@@ -21,8 +22,9 @@ class Graph:
     def print_graph(self):
         print(self.graph)
 
-    # Time complexity O(E+V)
     def bfs(self, src):
+        # Time complexity O(E+V)
+        # Space complexity O(V)
         stack = [src]
         visited = dict()
         bfs_order = []
@@ -45,7 +47,8 @@ class Graph:
             if visited[i] == 1:
                 self.dag = 0
             if not visited[i]:
-                visited, topological_sort, dfs_order = self._dfs_visit(graph, i,visited, topological_sort, dfs_order)
+                visited, topological_sort, dfs_order = self._dfs_visit(
+                    graph, i, visited, topological_sort, dfs_order)
         visited[v] = 2
         topological_sort.insert(0, v)
         return visited, topological_sort, dfs_order
@@ -60,15 +63,18 @@ class Graph:
             visited[i] = 0
         for i in self.V:
             if not visited[i]:
-                visited, topological_sort, dfs_order = self._dfs_visit(self.graph, i, visited, topological_sort, dfs_order)
+                visited, topological_sort, dfs_order = self._dfs_visit(
+                    self.graph, i, visited, topological_sort, dfs_order)
         return topological_sort, dfs_order
 
     def mst_kruskal(self):
-        mst_set = defaultdict(dict)
-        mst_parent = defaultdict(list)
-        node_sets = dict()
+        # time complexity O(ElogV).
+        mst_set = dict()  # for each node in the graph, the set it belongs to.
+        node_sets = dict()  # for each set, the list of all the nodes.
+        mst_parent = defaultdict(list)  # The parent of each node.
+
         for i in self.V:
-            mst_set[i]= i
+            mst_set[i] = i
             node_sets[i] = [i]
         self.E = []
         for i in self.graph:
@@ -79,9 +85,9 @@ class Graph:
         for e in self.E:
             old_set = mst_set[e[2]]
             new_set = mst_set[e[1]]
-            if old_set!=new_set:
+            if old_set != new_set:
                 for i in node_sets[old_set]:
-                    mst_set[i]= new_set
+                    mst_set[i] = new_set
                     node_sets[new_set].append(i)
                 del node_sets[old_set]
                 mst_parent[e[2]].append(e[1])
@@ -92,37 +98,24 @@ class Graph:
         tmp = nums[i]
         nums[i] = nums[j]
         nums[j] = tmp
-        
-    def _siftup(self, h, idx):
-        while idx > 0:
-            parent_idx = int((idx-1)/2.)
-            if h[parent_idx][0] > h[idx][0]:
-                self._exchange(h, parent_idx, idx)
-            else: break
 
     def mst_prim(self):
         src = 1
-        mst_tree = self._initialize_single_source(src)
         h = []
-        for i in self.V:
-            if i == src:
-                heapq.heappush(h, (0, i))
-            else:
-                heapq.heappush(h, (INF, i))
-        while h:
-            weight, cur = heapq.heappop(h)
-            for i in self.graph[cur]:
-                if i in [x[1] for x in h] and self.graph[cur][i]< mst_tree[i]['weight']:
-                    idx = h.index((mst_tree[i]['weight'], i))
-                    mst_tree[i]['weight'] = self.graph[cur][i]
-                    mst_tree[i]['parent'] = cur
-                    h[idx] = (self.graph[cur][i],i)
-                    self._siftup(h, idx)
+        mst_tree = self._initialize_single_source(src)
+        visited = [src]
+        for i in self.graph[src]:
+            heapq.heappush(h, (self.graph[src][i], src, i))
         total_weight = 0
-        for i in mst_tree:
-            parent = mst_tree[i]['parent']        
-            if parent != None:
-                total_weight += self.graph[parent][i]    
+        while h:
+            weight, parent, cur = heapq.heappop(h)
+            if cur not in visited:
+                mst_tree[cur]['parent'] = parent
+                visited.append(cur)
+                total_weight += weight
+                for i in self.graph[cur]:
+                    if i not in visited:
+                        heapq.heappush(h, (self.graph[cur][i], cur, i))
         return mst_tree, total_weight
 
     def _initialize_single_source(self, src):
@@ -132,16 +125,17 @@ class Graph:
             shortest_path[i]['parent'] = None
         shortest_path[src]['weight'] = 0
         return shortest_path
-    
+
     def _relax(self, start, end):
         if self.graph[start][end] + self.shortest_path[start]['weight'] < self.shortest_path[end]['weight']:
-            self.shortest_path[end]['weight'] = self.graph[start][end] + self.shortest_path[start]['weight']
+            self.shortest_path[end]['weight'] = self.graph[start][end] + \
+                self.shortest_path[start]['weight']
             self.shortest_path[end]['parent'] = start
 
-    # Complexity Bellman_ford O(VE)
-    # Complexity Bellman_ford DAG O(V+E)
-    # TO-DO: determine if it is a DAG
     def shortest_path_bellman_ford(self, src):
+        # Complexity Bellman_ford O(VE)
+        # Complexity Bellman_ford DAG O(V+E)
+        # TO-DO: determine if it is a DAG
         self.shortest_path = self._initialize_single_source(src)
         if self.dag:
             topological_sort, _ = self.dfs()
@@ -153,11 +147,12 @@ class Graph:
                 for start in self.graph:
                     for end in self.graph[start]:
                         self._relax(start, end)
-                    
+
         print('Shortest path with Bellman-ford algorithm.')
         print(self.shortest_path)
 
     def shortest_path_dijkstra(self, src):
+        # Time complexity: O(VlogV+E)
         self.shortest_path = self._initialize_single_source(src)
         h = []
         visited = []
@@ -169,7 +164,7 @@ class Graph:
             for i in self.graph[cur]:
                 if i not in visited:
                     h.remove((self.shortest_path[i]['weight'], i))
-                    self._relax(cur, i)                
+                    self._relax(cur, i)
                     heapq.heappush(h, (self.shortest_path[i]['weight'], i))
         print('Shortest path with Dijktra algorithm')
         print(self.shortest_path)
@@ -190,7 +185,8 @@ class Graph:
         cnt = 0
         for i in topological_sort:
             if not visited[i]:
-                visited, topological_sort_node, _ = self._dfs_visit(graph_transposed, i, visited, [], [])
-                print('Nodes in strongly connected component %d:'%cnt)
+                visited, topological_sort_node, _ = self._dfs_visit(
+                    graph_transposed, i, visited, [], [])
+                print('Nodes in strongly connected component %d:' % cnt)
                 print(topological_sort_node)
                 cnt += 1

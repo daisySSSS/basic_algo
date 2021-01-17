@@ -1,5 +1,6 @@
 INF = 1E4
 
+
 class Sort:
     def _exchange(self, nums, i, j):
         tmp = nums[i]
@@ -7,48 +8,55 @@ class Sort:
         nums[j] = tmp
 
     def _partition(self, nums, start, end):
-        x = nums[end]
+        x = nums[end]  # pivot
         i = start - 1
         j = start - 1
         for v in nums[start:end]:
-            j += 1
+            j += 1  # points to the current num
             if v <= x:
-                i += 1
+                i += 1  # points to the last checked num that is smaller or equal to the pivot
                 self._exchange(nums, i, j)
         i += 1
         self._exchange(nums, i, end)
         return i
-                
+
     def quick_sort(self, nums, start, end):
+        # worst case time complexity O(n^2)
+        # best case time complexity O(nlogn)
         if start < end:
             q = self._partition(nums, start, end)
             self.quick_sort(nums, start, q-1)
             self.quick_sort(nums, q+1, end)
-    
+
     def _max_heapify(self, nums, i):
+        # time complexity O(logn)
         left = 2*i + 1
         right = 2*(i + 1)
         largest = i
-        if left <  self._heap_size and nums[left] > nums[i]:
+        if left < self._heap_size and nums[left] > nums[i]:
             largest = left
-        if right < self._heap_size and nums[right] >  nums[largest]:
+        if right < self._heap_size and nums[right] > nums[largest]:
             largest = right
         if largest != i:
             self._exchange(nums, i, largest)
             self._max_heapify(nums, largest)
 
     def _build_heap(self, nums):
+        # time complexity O(n)
         self._heap_size = len(nums)
         for i in reversed(range(int(len(nums)/2.))):
             self._max_heapify(nums, i)
 
     def heap_sort(self, nums):
+        # time complexity: O(nlogn)
+        # Space complexity: O(1)
+        # sort inplace
         self._build_heap(nums)
         for i in reversed(range(1, len(nums))):
             self._exchange(nums, i, 0)
             self._heap_size -= 1
             self._max_heapify(nums, 0)
-    
+
     def priority_queue_increase_key(self, nums, i, key):
         if key <= nums[i]:
             return False
@@ -68,7 +76,7 @@ class Sort:
         self._heap_size -= 1
         self._max_heapify(nums, 0)
         return max_heap
-    
+
     def priority_queue_heap_max(self, nums):
         if self._heap_size < 1:
             return False
@@ -81,7 +89,7 @@ class Sort:
 
     def count_sort(self, nums):
         mi = min([x[0] for x in nums])
-        ma = max([x[0] for x in nums])       
+        ma = max([x[0] for x in nums])
         cnt = dict()
         for i in range(mi, ma+1):
             cnt[i] = 0
@@ -91,7 +99,7 @@ class Sort:
         for i in range(mi, ma+1):
             cnt[i] += prv
             prv = cnt[i]
-        
+
         lnums = len(nums)
         result = [None]*lnums
         attached = [None]*lnums
@@ -99,7 +107,7 @@ class Sort:
             result[cnt[v[0]]] = v[0]
             attached[cnt[v[0]]] = v[1]
             cnt[v[0]] -= 1
-        return result, attached 
+        return result, attached
 
     def _split(self, num):
         return [int(i) for i in str(num)]
@@ -111,12 +119,12 @@ class Sort:
         splited_num = [[0]*(max_cnt-len(x))+x for x in splited_num]
         cnt = max_cnt-1
         idx = list(range(len(nums)))
-        while cnt >=0:
-            num_to_sort =  [(splited_num[i][cnt],i) for i in idx]
+        while cnt >= 0:
+            num_to_sort = [(splited_num[i][cnt], i) for i in idx]
             _, idx = self.count_sort(num_to_sort)
             cnt -= 1
         return [nums[i] for i in idx]
-        
+
     # def bucket_sort(self, nums):
     # def bubble_sort():
     # def insertion_sort():
