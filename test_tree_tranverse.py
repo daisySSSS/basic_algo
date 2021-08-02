@@ -1,10 +1,4 @@
-from tree_tranverse import inorder_tranverse_recursive,inorder_tranverse_iterative,preorder_tranverse_recursive,preorder_tranverse_iterative,postorder_tranverse_recursive,postorder_tranverse_iterative
-
-class Tree:
-    def __init__(self, left=None, right=None, value=None):
-        self.left = left
-        self.right = right
-        self.value = value
+from tree_tranverse import Tree, inorder_tranverse_recursive,inorder_tranverse_iterative,preorder_tranverse_recursive,preorder_tranverse_iterative,postorder_tranverse_recursive,postorder_tranverse_iterative
 
 root = Tree(value=0)
 root.left = Tree(value=1)
